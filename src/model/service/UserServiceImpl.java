@@ -10,6 +10,11 @@ public class UserServiceImpl implements UserService {
     public List<User> getAllUsers() {
         return repository.getAllUsers();
     }
+
+    @Override
+    public User searchByID(Integer id) {
+        return repository.searchUserByID(id);
+    }
     @Override
     public int createUser(User user) {
         return repository.createUser(user);

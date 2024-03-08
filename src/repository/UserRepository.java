@@ -54,7 +54,6 @@ public class UserRepository {
                 LoadingProperties.properties.getProperty("database_password")
         );
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-
             System.out.println("Connected to database");
             // create new users
             preparedStatement.setString(1, user.getUserUuid());
@@ -117,5 +116,41 @@ public class UserRepository {
             System.out.println("Problem during updating data in database: " + sqlException.getMessage());
         }
         return 0;
+    }
+    // search by id
+    public  User searchUserByID(Integer id){
+        String sql = "SELECT *FROM users WHERE user_id = ?";
+        LoadingProperties.loadingProperty();
+        try(
+                Connection connection = DriverManager.getConnection(
+                        LoadingProperties.properties.getProperty("database_url"),
+                        LoadingProperties.properties.getProperty("database_username"),
+                        LoadingProperties.properties.getProperty("database_password")
+                );
+                Statement statement = connection.createStatement();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        )
+        {
+            preparedStatement.setInt(1,id);
+            try(
+                    ResultSet rs = preparedStatement.executeQuery();
+            ){
+                while (rs.next()){
+                    return new User(
+                            rs.getInt("user_id"),
+                            rs.getString("user_uuid"),
+                            rs.getString("user_name"),
+                            rs.getString("user_email"),
+                            rs.getString("user_password"),
+                            rs.getBoolean("is_deleted"),
+                            rs.getBoolean("is_verified")
+                    );
+                }
+            }
+
+        }catch (Exception exception){
+            System.out.println(exception.getMessage());
+        }
+        return new User();
     }
 }
